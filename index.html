@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Realtime communication with WebRTC</title>
+
+  <link rel="stylesheet" href="/css/main.css" />
+
+</head>
+
+<body>
+
+  <h1>Realtime communication with WebRTC</h1>
+  <center><h2 id="user_name"></h2></center>
+
+  <div id="videos">
+    <video id="remoteVideo" autoplay playsinline></video>
+  </div>
+<div id="query_box" >
+  <div>
+    <h3>Queries:</h3>
+
+    <!-- -----------------Query Input BOX-------------------- -->
+    <form class="form-container">
+      <p>Enter your query:</p>
+      <input name="msg" id="queryInput" required></textarea>
+  
+      <button type="submit" id="query_btn">Send</button>
+  </div>
+</div>
+  
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/adapter-latest.js"></script>
+  <script src="js/main-new.js"></script>
+
+</body>
+
+</html>

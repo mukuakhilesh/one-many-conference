@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+  <title>Realtime communication with WebRTC</title>
+
+  <link rel="stylesheet" href="/css/main.css" />
+
+</head>
+
+<body>
+
+  <h1>Realtime communication with WebRTC</h1>
+  <center><h1>Apun hi ADMIN hai:</h1></center>
+
+  <div id="videos">
+    <video id="localVideo" autoplay  playsinline></video>
+   <!--!!
+   <video id="remoteVideo" autoplay playsinline></video>
+    -->
+  </div>
+
+  <div id = "query_box">
+      <div>
+        <h3>Queries:</h3>
+    
+        <!-- -----------------Query Input BOX-------------------- -->
+        <form class="form-container">
+          <p>Enter your query:</p>
+          <input name="msg" id="queryInput" required></textarea>
+      
+          <button type="submit" id="query_btn">Send</button>
+      </div>
+    </div>
+
+  <!-- This file is automatically added/served when running "node index.js". -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="js/adapter-latest.js"></script>
+  <script src="js/main-admin-new.js"></script>
+
+</body>
+
+</html>
