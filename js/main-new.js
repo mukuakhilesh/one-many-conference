@@ -60,7 +60,7 @@ var sdpConstraints = {
 
 /////////////////////////////////////////////
 
-var room = voice;
+var room = 'voice';
 var userName = prompt("Enter your name");
 // Could prompt for room name:
 // room = prompt('Enter room name:');

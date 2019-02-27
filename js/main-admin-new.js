@@ -62,7 +62,7 @@ function  addQuery(message , socketid){
 
     //////////////////////// TAKING USERNAME AND ROOMNAME
 
-var room = voice;
+var room = 'voice';
 var userName = "MD "+ prompt("Enter your name");
 
 ///////////////////SOCKET MESSAGES////////////////
