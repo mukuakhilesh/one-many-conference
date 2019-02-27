@@ -7,6 +7,8 @@ var localStream;
 var pc = [];
 var turnReady;
 var mySocketId = 'MD';
+$('#hangup').hide();
+
 var pcConfig = {
     'iceServers': [{
       'urls': 'stun:stun.l.google.com:19302'
@@ -19,14 +21,13 @@ var sdpConstraints = {
     offerToReceiveVideo: true
   };
   
-
-
-  ////////////////////////////////////////////////////QUERY PART////////////////////////////////////////////////////
+////////////////////////////////////////////////////QUERY PART////////////////////////////////////////////////////
 
 var queryBox = document.querySelector("#query_box");
 //var queryBtn = document.querySelector('#query_btn');
 
 ////////////////////////////////////QUERY BUTTON///////////////////
+
 document.getElementById("query_btn").addEventListener("click", function(event){
     event.preventDefault();
        var query = document.getElementById('queryInput').value;
@@ -38,7 +39,7 @@ document.getElementById("query_btn").addEventListener("click", function(event){
 
 function receiveQuery (message , socketid , event)
 {   
-    $("#query_box").append('<div class="container">' + '<p>' + socketid + '</p>'+
+    $("#query_box").prepend('<div class="container">' + '<p>' + socketid + '</p>'+
                         '<p>'+ message +'</p>'+
                         '</div>');
     //event.preventDefault();
@@ -52,7 +53,7 @@ function sendQuery(msg){
 function  addQuery(message , socketid){
 
 
-    $('#query_box').append('<div class="container">'+
+    $('#query_box').prepend('<div class="container">'+
                         '<p>' + 'Myself :' + '</p>'+
                         '<p>'+message+'</p>'+
                         '</div>');
@@ -71,10 +72,6 @@ var socket = io.connect();
 if (room  !=='') {
     socket.emit('create',room);
     console.log(userName + ": Sent request to create room");
-}
-else {
-    alert("Enter valids room name");
-    room = prompt("Enter room name to create:");
 }
 
 socket.on('created', function(room , socketid){
@@ -145,13 +142,16 @@ var localVideo = document.querySelector('#localVideo');
 
 var constraints = {
     audio : true,
-    video : true
+    video : {
+        width : 1280 ,
+        height : 720
+    }
 };
 
 navigator.mediaDevices.getUserMedia(constraints).then(gotStream)
-.catch(function(err){
-    alert('getUserMedia error : '+err.name );
-});
+    .catch(function(err){
+        alert('getUserMedia error : '+err.name );
+        });
 
 function gotStream(stream){
 
@@ -159,12 +159,12 @@ function gotStream(stream){
     localStream =  stream;
     localVideo.srcObject = stream;
     sendMessage('got user media');
+    startRecording();
+
+    $('#hangup').show();
 
     console.log("Process of getting local media executed successfully");
-    
-  //  if(isInitiator){
-    //    maybeStart();
-    //}
+
 }
 
 /////////////////////SEND REQUEST FOR TURN SERVER///////////////
@@ -284,22 +284,131 @@ function requestTurn(turnURL) {
   }
   ///////////////////////////////////////turn event ends////////////////
 
+
+/*
   function hangup() {
     console.log('Hanging up.');
     stop();
+    stopRecording();
+    downloadRecordings();
     sendMessage('bye');
   }
-/*
-  function handleRemoteHangup() {
-    console.log('Session terminated.');
-    stop();
-    isInitiator = false;
-  }
   */
-  
+
+  $('#hangup').click(function() {
+        console.log('Hanging up.');
+        stop();
+        stopRecording();
+        downloadRecordings();
+        sendMessage('bye');
+      });
+
+
   function stop() {
     isStarted = false;
-    pc.close();
+   // pc.close();
     pc = null;
   }
   
+
+  /////////////////////////////////////////////   VIDEO RECORDINGS
+
+  const mediaSource = new MediaSource();
+  mediaSource.addEventListener('sourceopen', handleSourceOpen, false);
+  
+  let mediaRecorder;
+  let recordedBlobs;
+  let sourceBuffer;
+  
+  const errorMsgElement = document.querySelector('span#errorMsg');
+
+
+  ///////////////////////////////////////START RECORDING
+
+function startRecording() {
+    recordedBlobs = [];
+    let options = {mimeType: 'video/webm;codecs=vp9'};
+    if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+            console.error(`${options.mimeType} is not Supported`);
+           // errorMsgElement.innerHTML = `${options.mimeType} is not Supported`;
+        
+            options = {mimeType: 'video/webm;codecs=vp8'};
+        
+            if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                    console.error(`${options.mimeType} is not Supported`);
+                  //  errorMsgElement.innerHTML = `${options.mimeType} is not Supported`;
+                
+                    options = {mimeType: 'video/webm'};
+                
+                if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+                        console.error(`${options.mimeType} is not Supported`);
+                      //  errorMsgElement.innerHTML = `${options.mimeType} is not Supported`;
+                        options = {mimeType: ''};
+                
+              }
+
+            }
+
+          }
+
+        //---------------assign the suitable media support and then try
+          try {
+                mediaRecorder = new MediaRecorder(localStream, options);
+          } catch (e) {
+                console.error('Exception while creating MediaRecorder:', e);
+               // errorMsgElement.innerHTML = `Exception while creating MediaRecorder: ${JSON.stringify(e)}`;
+                return;
+          }
+        
+        
+            console.log('Created MediaRecorder', mediaRecorder, 'with options', options);
+          //  recordButton.textContent = 'Stop Recording';
+          //  downloadButton.disabled = true;
+            mediaRecorder.onstop = (event) => {
+                console.log('Recorder stopped: ', event);
+          };
+
+          mediaRecorder.ondataavailable = handleDataAvailable;
+          mediaRecorder.start(10); // collect 10ms of data
+          console.log('MediaRecorder started', mediaRecorder);
+        }
+
+
+        
+function stopRecording() {
+mediaRecorder.stop();
+console.log('Recorded Blobs: ', recordedBlobs);
+}
+
+
+function downloadRecordings(){
+    const blob = new Blob(recordedBlobs, {type: 'video/webm'});
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = 'test.webm';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+  }, 100);
+}
+
+
+function handleSourceOpen(event) {
+  console.log('MediaSource opened');
+  sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8"');
+  console.log('Source buffer: ', sourceBuffer);
+}
+
+
+function handleDataAvailable(event) {
+  if (event.data && event.data.size > 0) {
+    recordedBlobs.push(event.data);
+  }
+}
+
+
+

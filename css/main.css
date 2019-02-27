@@ -14,7 +14,7 @@ video {
   border-color: black;
   border-style: double;
   float : right;
-
+  overflow: scroll;
 }
 
 .container {
@@ -23,4 +23,5 @@ video {
   border-radius: 5px;
   padding: 10px;
   margin: 10px 0;
+  
 }

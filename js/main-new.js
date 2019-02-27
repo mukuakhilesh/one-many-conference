@@ -29,7 +29,7 @@ document.getElementById("query_btn").addEventListener("click", function(event){
 
 function receiveQuery (message , socketid , event)
 {   
-    $("#query_box").append('<div class="container">' + '<p>' + socketid + '</p>'+
+    $("#query_box").prepend('<div class="container">' + '<p>' + socketid + '</p>'+
                         '<p>'+ message +'</p>'+
                         '</div>');
     //event.preventDefault();
@@ -43,7 +43,7 @@ function sendQuery(msg){
 function  addQuery(message , socketid){
 
 
-    $('#query_box').append('<div class="container">'+
+    $('#query_box').prepend('<div class="container">'+
                         '<p>' + 'Myself :' + '</p>'+
                         '<p>'+message+'</p>'+
                         '</div>');
@@ -62,8 +62,6 @@ var sdpConstraints = {
 
 var room = 'voice';
 var userName = prompt("Enter your name");
-// Could prompt for room name:
-// room = prompt('Enter room name:');
 
 var socket = io.connect();
 
@@ -71,11 +69,7 @@ if (room !== '') {
   socket.emit('join', room,userName);
   console.log('Attempting to join room', room);
 }
-/*else {
-  alert("Enter valids room name");
-  room = prompt("Enter room name to create:");
-}
-*/
+
 ////  SOCKET COMMANDS CLIENT SIDE
 socket.on('adminSocketId' ,function(admin){
     adminSocketId = admin;
@@ -112,7 +106,6 @@ socket.on('full' , function(room){
     alert('Reload Page to join other room');
     console.log("Room full");
 
-
 });
 
 ///////////////////////SOCKET MESSAGES END HERE//////////////
@@ -132,17 +125,18 @@ socket.on('message', function(message){
         if(!receivedStream) {
             maybeStart(message);
         }
-
-        //pc.setRemoteDescription(new RTCSessionDescription(message));
         doAnswer();
+
     } else if (message.type === 'candidate') {
         var candidate = new RTCIceCandidate({
             sdpMLineIndex: message.label,
             candidate: message.candidate
         });
         pc.addIceCandidate(candidate);
+
     } else if(message ==='bye' && receivedStream) {
         handleRemoteHangup();
+
     }
 });
 
@@ -197,8 +191,6 @@ function createPeerConnection(message){
     } catch(err){
 
         console.log('Failed to create RTCPeerConnection, exception: '+err);
-       // alert('Cannot create RTCPeerConnection object');
-       // alert("Reload page");
         return;
     }
 }
@@ -283,7 +275,7 @@ function handleRemoteStreamAdded(event) {
 }
 
 function handleRemoteStreamRemoved(event) {
-    console.log('Remote stream removed : ' + Event);
+    console.log('Remote stream removed : ' + event);
     receivedStream = false;
 }
 
@@ -297,3 +289,8 @@ function stop(){
     pc.close();
     pc = null;
 }
+
+
+
+//////////////////////////////////////////////////////REcording script
+
