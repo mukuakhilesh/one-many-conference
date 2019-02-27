@@ -97,6 +97,10 @@ socket.on('ready',function(room){
 
 });
 
+socket.on('msgForAdmin' , function(message){
+    console.log('got this message from any user ' , message);
+})
+
 socket.on('log',function(array){
     console.log.apply(console , array);
 });

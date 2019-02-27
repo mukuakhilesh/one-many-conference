@@ -54,6 +54,12 @@ function checkRoomExistence(room){
     socket.broadcast.emit('message', message);
   });
 
+    socket.on('msgForAdmin' , function(message){
+      console.log('got a msg foR ADMIN');
+      console.log("admin id" , adminSocketId);
+      io.to(adminSocketId).emit('msgForAdmin' , message);
+      console.log("directed msg to admin")
+    })
 ///////////////room  creation request from admin
 
   socket.on('create',function(room) {

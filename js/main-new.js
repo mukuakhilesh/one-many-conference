@@ -127,9 +127,8 @@ function sendMessage(message){
 socket.on('message', function(message){
     console.log(userName + ' received message : ', message);
 
-    if(message === 'got user media') {
-        maybeStart();
-    } else if(message.type === 'offer') {
+   
+    if(message.type === 'offer') {
         if(!receivedStream) {
             maybeStart(message);
         }
@@ -147,7 +146,10 @@ socket.on('message', function(message){
     }
 });
 
-
+function sendMessageToAdmin (message){
+    console.log(userName + 'sending msg to Admin :' , message);
+    socket.emit('msgForAdmin' , message);
+}
 
 
 
@@ -173,7 +175,7 @@ function maybeStart(msg)  {
 }
 
 window.onbeforeunload = function() {
-    sendMessage('bye');
+    sendMessageToAdmin('bye');
   };
 
 
