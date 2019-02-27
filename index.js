@@ -3,6 +3,7 @@ const express = require('express');
 const app = new express();
 const http = require("http").Server(app);
 var io = require("socket.io")(http);
+var adminSocketId = null;
 
 var port = process.env.port || 3000;
 
@@ -64,10 +65,12 @@ function checkRoomExistence(room){
     else{
       */
     socket.join(room);
+    adminSocketId = socket.id;
     log('Client ID ' + socket.id + ' created room ' + room);
     console.log("created room " + room);
     socket.emit('created', room, socket.id);
     console.log("sent 'created' message ")
+    socket.broadcast.emit('adminSocketId',adminSocketId);
     //}
 
   });
@@ -85,7 +88,7 @@ function checkRoomExistence(room){
       log(userName + ' with Client ID ' + socket.id + ' wants to join ' + room);
      // io.sockets.in(room).emit('join ', room);
       socket.join(room);
-      socket.emit('joined', room, socket.id);
+      socket.emit('joined', room, socket.id , adminSocketId);
       io.sockets.in(room).emit('ready',room);
     } else { // max six clients
       socket.in(room).emit('full', room);
@@ -112,6 +115,6 @@ function checkRoomExistence(room){
 });
 
 
-http.listen(port,function(){
+http.listen(port,'192.168.43.188',function(){
     console.log("listening to port" + port);
 });

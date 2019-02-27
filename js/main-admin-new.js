@@ -62,7 +62,7 @@ function  addQuery(message , socketid){
 
     //////////////////////// TAKING USERNAME AND ROOMNAME
 
-var room = prompt("Enter room name to create:");
+var room = voice;
 var userName = "MD "+ prompt("Enter your name");
 
 ///////////////////SOCKET MESSAGES////////////////
@@ -90,6 +90,11 @@ socket.on('full',function(room){
 socket.on('ready',function(room){
     console.log('Triggering Channel In ' + room);
     isChannelReady =  true;
+
+    if(isChannelReady && localStream !== undefined){
+        maybeStart();
+    }
+
 });
 
 socket.on('log',function(array){
@@ -153,9 +158,9 @@ function gotStream(stream){
 
     console.log("Process of getting local media executed successfully");
     
-    if(isInitiator){
-        maybeStart();
-    }
+  //  if(isInitiator){
+    //    maybeStart();
+    //}
 }
 
 /////////////////////SEND REQUEST FOR TURN SERVER///////////////

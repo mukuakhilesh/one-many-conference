@@ -9,6 +9,7 @@ var remoteStream;
 var turnReady;
 var receivedStream = false;
 var mySocketId;
+var adminSocketId = null;
 
 var pcConfig = {'iceServers' : [{'urls':'stun:stun.l.google.com:19302'}] };
 ////////////////////////////////////////////////////QUERY PART////////////////////////////////////////////////////
@@ -59,7 +60,7 @@ var sdpConstraints = {
 
 /////////////////////////////////////////////
 
-var room = prompt("Enter room name to create:");
+var room = voice;
 var userName = prompt("Enter your name");
 // Could prompt for room name:
 // room = prompt('Enter room name:');
@@ -70,18 +71,24 @@ if (room !== '') {
   socket.emit('join', room,userName);
   console.log('Attempting to join room', room);
 }
-else {
+/*else {
   alert("Enter valids room name");
   room = prompt("Enter room name to create:");
 }
-
+*/
 ////  SOCKET COMMANDS CLIENT SIDE
+socket.on('adminSocketId' ,function(admin){
+    adminSocketId = admin;
+    console.log("Got Admins Socket Id");
+});
 
-socket.on('joined', function(room , returnedSocketid){
+socket.on('joined', function(room , returnedSocketid , admin){
     mySocketId = returnedSocketid;
+    adminSocketId = admin;
     console.log(userName + ' joined the room ' + room);
     console.log(' socket id returned by me ' + returnedSocketid);
     console.log('===================================================');
+    console.log("Got Admins Socket Id = "+ adminSocketId);
     //console.log("default socket.id = ");
     isChannelReady = true;
 
@@ -116,9 +123,6 @@ function sendMessage(message){
 }
 
 /// This Client receives a message from SOCKET SERVER
-
-
-
 
 socket.on('message', function(message){
     console.log(userName + ' received message : ', message);
