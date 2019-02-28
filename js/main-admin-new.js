@@ -284,22 +284,12 @@ function requestTurn(turnURL) {
   }
   ///////////////////////////////////////turn event ends////////////////
 
-
-/*
-  function hangup() {
-    console.log('Hanging up.');
-    stop();
-    stopRecording();
-    downloadRecordings();
-    sendMessage('bye');
-  }
-  */
-
   $('#hangup').click(function() {
         console.log('Hanging up.');
         stop();
         stopRecording();
         downloadRecordings();
+        alert("Today's session has been saved in downloads.")
         sendMessage('bye');
       });
 
@@ -387,7 +377,7 @@ function downloadRecordings(){
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
-    a.download = 'test.webm';
+    a.download = Date()+'.webm';
     document.body.appendChild(a);
     a.click();
     setTimeout(() => {
