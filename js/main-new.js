@@ -27,10 +27,10 @@ document.getElementById("query_btn").addEventListener("click", function(event){
 
 ///////////////////////
 
-function receiveQuery (message , socketid , event)
+function receiveQuery (data)
 {   
-    $("#query_box").prepend('<div class="container">' + '<p>' + socketid + '</p>'+
-                        '<p>'+ message +'</p>'+
+    $("#query_box").prepend('<div class="container">' + '<p>' + data.user + '</p>'+
+                        '<p>'+ data.message +'</p>'+
                         '</div>');
     //event.preventDefault();
 }
@@ -90,9 +90,9 @@ socket.on('joined', function(room , returnedSocketid , admin){
 
 //////////////////////   QUERY COMMAND FROM SOCKET///////////////////////
 
-socket.on('query', function(message , socketid)
+socket.on('query', function(data)
 {
-    receiveQuery(message , socketid);
+    receiveQuery(data);
 });
 
 /////////////////////////////////////////////////////////////
@@ -169,9 +169,14 @@ function maybeStart(msg)  {
 }
 
 window.onbeforeunload = function() {
-    sendMessageToAdmin('bye');
-  };
+    socket.emit('iAmLEaving');
+}
 
+window.addEventListener("unload", function(event) { 
+   // sendMessageToAdmin('bye');
+    sendMessage('iAmLeaving');
+    socket.emit('iAmLeaving');
+});
 
 ///////////////////////////////////////////////PEER CONNECTION COMMANDS
 

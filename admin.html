@@ -24,6 +24,20 @@
     <button id="hangup">Hang</button>
 </div>
 
+<div id="UploadBox">
+        <h2>Video Uploader</h2>
+        <form id="form">
+            <input type="file" id="file" multiple />
+            <input type="submit" value="Upload" />
+        </form>
+    </div>
+<div id='onlineUsers'>
+  <button id="showOnlineUsers">usersOnline</button>
+    <h5>Users Online:</h5>
+    <div id="online"></div>
+</div>
+
+
       <div>
         <h3>Queries:</h3>
       </div>
@@ -46,8 +60,10 @@
   <!-- This file is automatically added/served when running "node index.js". -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
+  <script src="socket.io-file-client.js"></script>
   <script src="js/adapter-latest.js"></script>
   <script src="js/main-admin-new.js"></script>
+  <script src="js/client.js"></script>
 
 </body>
 

@@ -5,6 +5,8 @@ var isInitiator = false;
 var isStarted = false;
 var localStream;
 var pc = [];
+var users = [];
+
 var turnReady;
 var mySocketId = 'MD';
 $('#hangup').hide();
@@ -24,7 +26,6 @@ var sdpConstraints = {
 ////////////////////////////////////////////////////QUERY PART////////////////////////////////////////////////////
 
 var queryBox = document.querySelector("#query_box");
-//var queryBtn = document.querySelector('#query_btn');
 
 ////////////////////////////////////QUERY BUTTON///////////////////
 
@@ -37,12 +38,12 @@ document.getElementById("query_btn").addEventListener("click", function(event){
 
 ///////////////////////
 
-function receiveQuery (message , socketid , event)
+function receiveQuery (data)
 {   
-    $("#query_box").prepend('<div class="container">' + '<p>' + socketid + '</p>'+
-                        '<p>'+ message +'</p>'+
+    $("#query_box").prepend('<div class="container">' + '<p>' + data.user + '</p>'+
+                        '<p>'+ data.message +'</p>'+
                         '</div>');
-    //event.preventDefault();
+
 }
 
 function sendQuery(msg){
@@ -59,7 +60,54 @@ function  addQuery(message , socketid){
                         '</div>');
 
 }
+
+
 ////////////////////////////////////////QUERY PART ENDS/////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//========================================ONLINE USERS STARTS HERE
+
+
+
+
+$('#showOnlineUsers').click(function(){
+  //alert('did u just click????');
+  for(var i=0 ; i<users.length;i++){
+    if(users[i] !== null){
+     // console.log("user "+ i +' ' + users[i]);
+     $("#online").prepend('<div class="container">' + '<p>' + users[i] + '</p>'+
+                        '</div>');
+    }
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     //////////////////////// TAKING USERNAME AND ROOMNAME
 
@@ -69,10 +117,14 @@ var userName = "MD "+ prompt("Enter your name");
 ///////////////////SOCKET MESSAGES////////////////
 var socket = io.connect();
 
+
+
 if (room  !=='') {
-    socket.emit('create',room);
+    socket.emit('create',room , userName);
     console.log(userName + ": Sent request to create room");
 }
+
+
 
 socket.on('created', function(room , socketid){
     console.log('Created Room '+ room);
@@ -80,9 +132,13 @@ socket.on('created', function(room , socketid){
     isInitiator = true;
 });
 
+
+/*
 socket.on('full',function(room){
     console.log(room +  " is full ");
 });
+*/
+
 
 socket.on('ready',function(room){
     console.log('Triggering Channel In ' + room);
@@ -94,21 +150,51 @@ socket.on('ready',function(room){
 
 });
 
+
+
 socket.on('msgForAdmin' , function(message){
     console.log('got this message from any user ' , message);
-})
+});
+
+
 
 socket.on('log',function(array){
     console.log.apply(console , array);
 });
 
+
+
+
 //////////////////////////////////////////////////////////
+
+
 
 
 function sendMessage(message) {
     console.log(userName + ' sending msg : ',message);
     socket.emit('message' , message)
 }
+
+//USERS LIST
+socket.on('newClient' , function( clientName){
+users.push(clientName);
+console.log("got a new user online " + clientName);
+console.log('Pushed a new user in users '+ users);
+});
+
+
+socket.on('clientOffline' , function(clientName){
+var index = users.indexOf(clientName);
+users[index] = null;
+console.log(" deleted a new user "+clientName+ "  whose index = "+index);
+});
+
+
+
+
+
+
+
 
 //////////////////////   QUERY COMMAND FROM SOCKET///////////////////////
 
@@ -118,6 +204,9 @@ socket.on('query', function(message , socketid)
 });
 
 /////////////////////////////////////////////////////////////
+
+
+
 
 
 socket.on('message' , function(message) {
@@ -160,7 +249,6 @@ function gotStream(stream){
     localVideo.srcObject = stream;
     sendMessage('got user media');
     startRecording();
-
     $('#hangup').show();
 
     console.log("Process of getting local media executed successfully");
@@ -199,6 +287,8 @@ function maybeStart(){
 window.onbeforeunload = function(){
     sendMessage('bye');
 };
+
+
 
 //////////////////////////////PEER COONECTIONS FUNCTIONS///////////
 
@@ -300,6 +390,26 @@ function requestTurn(turnURL) {
     pc = null;
   }
   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   /////////////////////////////////////////////   VIDEO RECORDINGS
 
