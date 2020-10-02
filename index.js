@@ -121,6 +121,6 @@ function checkRoomExistence(room){
 });
 
 
-http.listen(port,'192.168.43.188',function(){
+http.listen(port,function(){
     console.log("listening to port" + port);
 });
